@@ -63,7 +63,9 @@ Abra no Expo Go (app do celular) ou no emulador Android/iOS.
   /components
     BotaoTema.tsx
     CardLugar.tsx
+    index.ts
     LibrasButton.tsx
+    StateDisplay.tsx
   /context
     FavoritesContext.tsx
     ThemeContext.tsx
