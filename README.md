@@ -40,7 +40,7 @@ Inclui suporte a tema escuro/claro e botão de Libras para acessibilidade! 🌙�
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/JJhonata/Mage.git
+git clone https://github.com/seu-usuario/Mage.git
 
 # 2. Entre na pasta do projeto
 cd Mage
@@ -113,4 +113,4 @@ Sinta-se à vontade para abrir issues, sugerir melhorias ou reportar bugs.
 
 ---
 
-> Desenvolvido com 💚 por [Jhonata e Larissa]
+> Desenvolvido com 💚 por [Jhonata e Larissa](https://github.com/seu-usuario)

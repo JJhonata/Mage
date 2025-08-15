@@ -16,6 +16,8 @@ export function BotaoTema() {
         backgroundColor: colors.borderLight,
         borderRadius: 8,
         marginRight: 8,
+        borderWidth: 1,
+        borderColor: colors.border,
       }}
     >
       <Ionicons

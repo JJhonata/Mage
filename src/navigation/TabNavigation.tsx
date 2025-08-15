@@ -50,6 +50,10 @@ export default function TabNavigation() {
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
+        // Estilo do conteúdo da tela
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} />

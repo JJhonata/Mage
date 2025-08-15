@@ -35,12 +35,12 @@ export function LibrasButton({ text, onPress }: LibrasButtonProps) {
         ]}
       >
         <MaterialCommunityIcons
-          name="hand-front"
+          name="gesture-tap"
           size={20}
-          color={colors.text}
+          color={colors.surface}
         />
         {text && (
-          <Text style={[styles.buttonText, { color: colors.text }]}>
+          <Text style={[styles.buttonText, { color: colors.surface }]}>
             {text}
           </Text>
         )}
@@ -56,7 +56,7 @@ export function LibrasButton({ text, onPress }: LibrasButtonProps) {
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={styles.modalHeader}>
               <MaterialCommunityIcons
-                name="hand-front"
+                name="gesture-tap"
                 size={32}
                 color={colors.primary}
               />
@@ -74,7 +74,7 @@ export function LibrasButton({ text, onPress }: LibrasButtonProps) {
                 style={[styles.modalButton, { backgroundColor: colors.primary }]}
                 onPress={() => setShowModal(false)}
               >
-                <Text style={[styles.modalButtonText, { color: colors.text }]}>
+                <Text style={[styles.modalButtonText, { color: colors.surface }]}>
                   Entendi
                 </Text>
               </TouchableOpacity>

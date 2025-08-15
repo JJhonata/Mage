@@ -124,7 +124,7 @@ export default function CardLugar({
                 }
                 animarFavorito();
               }}
-              style={styles.favoritoBtn}
+              style={[styles.favoritoBtn, { backgroundColor: colors.borderLight }]}
             >
               <Ionicons
                 name={estaFavoritado ? 'heart' : 'heart-outline'}
@@ -141,7 +141,7 @@ export default function CardLugar({
 
           {/* Indicador de segurança */}
           <View style={styles.securityContainer}>
-            <View style={styles.securityIndicator}>
+            <View style={[styles.securityIndicator, { backgroundColor: colors.borderLight, borderColor: colors.border }]}>
               <MaterialCommunityIcons
                 name={iconeSeguranca as any}
                 size={18}

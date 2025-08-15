@@ -11,24 +11,27 @@ import {
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
+import { getThemeColors } from '../theme/colors';
 import CardLugar from '../components/CardLugar';
+import { StateDisplay } from '../components/StateDisplay';
 
 export default function FavoritesScreen() {
   const { favoritos, removerFavorito } = useFavorites();
   const { theme } = useTheme();
+  const colors = getThemeColors(theme);
   const [showCreateRoute, setShowCreateRoute] = useState(false);
 
   // Função para obter cor do indicador de segurança
   const getSecurityColor = (nivel: string) => {
     switch (nivel) {
       case 'Alto':
-        return '#10B981';
+        return colors.success;
       case 'Médio':
-        return '#F59E0B';
+        return colors.warning;
       case 'Baixo':
-        return '#EF4444';
+        return colors.danger;
       default:
-        return '#6B7280';
+        return colors.textSecondary;
     }
   };
 
@@ -54,145 +57,153 @@ export default function FavoritesScreen() {
     }, 2000);
   };
 
+  // Renderização condicional para estado vazio
+  if (favoritos.length === 0) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+        <StatusBar 
+          barStyle={theme === 'light' ? 'dark-content' : 'light-content'} 
+          backgroundColor={colors.background} 
+        />
+        
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          <View style={styles.headerContent}>
+            <MaterialCommunityIcons 
+              name="heart" 
+              size={28} 
+              color={colors.danger} 
+            />
+            <Text style={[styles.headerTitle, { color: colors.text }]}>Meus Favoritos</Text>
+          </View>
+        </View>
+
+        {/* Estado vazio */}
+        <StateDisplay
+          type="empty"
+          title="Nenhum favorito ainda"
+          message="Adicione lugares aos seus favoritos para criar roteiros personalizados"
+          actionText="Explorar Lugares"
+          onAction={() => {/* Navegar para Home */}}
+          showAction={true}
+        />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar 
+        barStyle={theme === 'light' ? 'dark-content' : 'light-content'} 
+        backgroundColor={colors.background} 
+      />
       
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <View style={styles.headerContent}>
           <MaterialCommunityIcons 
             name="heart" 
             size={28} 
-            color="#EF4444" 
+            color={colors.danger} 
           />
-          <Text style={styles.headerTitle}>Meus Favoritos</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Meus Favoritos</Text>
         </View>
         
-        {favoritos.length > 0 && (
-          <TouchableOpacity
-            style={styles.createRouteButton}
-            onPress={handleCreateRoute}
-            disabled={showCreateRoute}
-          >
-            <MaterialCommunityIcons 
-              name="map-marker-path" 
-              size={20} 
-              color="#FFFFFF" 
-            />
-            <Text style={styles.createRouteText}>
-              {showCreateRoute ? 'Criando...' : 'Criar Roteiro'}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={[styles.createRouteButton, { backgroundColor: colors.primary }]}
+          onPress={handleCreateRoute}
+          disabled={showCreateRoute}
+        >
+          <MaterialCommunityIcons 
+            name="map-marker-path" 
+            size={20} 
+            color="#FFFFFF" 
+          />
+          <Text style={styles.createRouteText}>
+            {showCreateRoute ? 'Criando...' : 'Criar Roteiro'}
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Conteúdo principal */}
       <View style={styles.content}>
-        {favoritos.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons
-              name="heart-outline"
-              size={80}
-              color="#D1D5DB"
-            />
-            <Text style={styles.emptyTitle}>Nenhum favorito ainda</Text>
-            <Text style={styles.emptySubtitle}>
-              Adicione lugares aos seus favoritos para criar roteiros personalizados
-            </Text>
-            
-            <View style={styles.emptyActions}>
-              <TouchableOpacity style={styles.exploreButton}>
-                <MaterialCommunityIcons 
-                  name="map-search" 
-                  size={20} 
-                  color="#1E40AF" 
-                />
-                <Text style={styles.exploreButtonText}>Explorar Lugares</Text>
-              </TouchableOpacity>
-            </View>
+        {/* Estatísticas */}
+        <View style={[styles.statsContainer, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.statItem}>
+            <Text style={[styles.statNumber, { color: colors.text }]}>{favoritos.length}</Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Lugares</Text>
           </View>
-        ) : (
-          <>
-            {/* Estatísticas */}
-            <View style={styles.statsContainer}>
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>{favoritos.length}</Text>
-                <Text style={styles.statLabel}>Lugares</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {favoritos.filter(f => f.nivelSeguranca === 'Alto').length}
-                </Text>
-                <Text style={styles.statLabel}>Seguros</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statItem}>
-                <Text style={styles.statNumber}>
-                  {favoritos.filter(f => f.nivelSeguranca === 'Médio').length}
-                </Text>
-                <Text style={styles.statLabel}>Atenção</Text>
-              </View>
-            </View>
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statNumber, { color: colors.text }]}>
+              {favoritos.filter(f => f.nivelSeguranca === 'Alto').length}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Seguros</Text>
+          </View>
+          <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+          <View style={styles.statItem}>
+            <Text style={[styles.statNumber, { color: colors.text }]}>
+              {favoritos.filter(f => f.nivelSeguranca === 'Médio').length}
+            </Text>
+            <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Atenção</Text>
+          </View>
+        </View>
 
-            {/* Lista de favoritos */}
-            <View style={styles.favoritesSection}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Lugares Favoritos</Text>
-                <Text style={styles.sectionSubtitle}>
-                  {favoritos.length} {favoritos.length === 1 ? 'lugar' : 'lugares'} salvos
-                </Text>
-              </View>
+        {/* Lista de favoritos */}
+        <View style={styles.favoritesSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>Lugares Favoritos</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+              {favoritos.length} {favoritos.length === 1 ? 'lugar' : 'lugares'} salvos
+            </Text>
+          </View>
 
-              <ScrollView 
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-              >
-                {favoritos.map((lugar, index) => (
-                  <View key={`${lugar.nome}-${index}`} style={styles.favoriteItem}>
-                    <CardLugar 
-                      {...lugar}
-                      id={index.toString()}
-                      distancia="Favorito"
-                      tipo="Favorito"
-                      securityColor={getSecurityColor(lugar.nivelSeguranca)}
-                      securityIcon={getSecurityIcon(lugar.nivelSeguranca)}
-                    />
-                    
-                    <TouchableOpacity
-                      style={styles.removeButton}
-                      onPress={() => removerFavorito(lugar)}
-                    >
-                      <Ionicons name="trash-outline" size={20} color="#EF4444" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* Sugestão de roteiro */}
-            {favoritos.length >= 2 && (
-              <View style={styles.routeSuggestion}>
-                <View style={styles.suggestionContent}>
-                  <MaterialCommunityIcons 
-                    name="lightbulb-outline" 
-                    size={24} 
-                    color="#F59E0B" 
-                  />
-                  <View style={styles.suggestionText}>
-                    <Text style={styles.suggestionTitle}>Dica de Roteiro</Text>
-                    <Text style={styles.suggestionSubtitle}>
-                      Você tem {favoritos.length} lugares favoritos. Que tal criar um roteiro personalizado?
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity style={styles.suggestionButton}>
-                  <Text style={styles.suggestionButtonText}>Criar Roteiro</Text>
+          <ScrollView 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {favoritos.map((lugar, index) => (
+              <View key={`${lugar.nome}-${index}`} style={styles.favoriteItem}>
+                <CardLugar 
+                  {...lugar}
+                  id={index.toString()}
+                  distancia="Favorito"
+                  tipo="Favorito"
+                  securityColor={getSecurityColor(lugar.nivelSeguranca)}
+                  securityIcon={getSecurityIcon(lugar.nivelSeguranca)}
+                />
+                
+                <TouchableOpacity
+                  style={[styles.removeButton, { backgroundColor: colors.surface }]}
+                  onPress={() => removerFavorito(lugar)}
+                >
+                  <Ionicons name="trash-outline" size={20} color={colors.danger} />
                 </TouchableOpacity>
               </View>
-            )}
-          </>
+            ))}
+          </ScrollView>
+        </View>
+
+        {/* Sugestão de roteiro */}
+        {favoritos.length >= 2 && (
+          <View style={[styles.routeSuggestion, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.suggestionContent}>
+              <MaterialCommunityIcons 
+                name="lightbulb-outline" 
+                size={24} 
+                color={colors.warning} 
+              />
+              <View style={styles.suggestionText}>
+                <Text style={[styles.suggestionTitle, { color: colors.text }]}>Dica de Roteiro</Text>
+                <Text style={[styles.suggestionSubtitle, { color: colors.textSecondary }]}>
+                  Você tem {favoritos.length} lugares favoritos. Que tal criar um roteiro personalizado?
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity style={[styles.suggestionButton, { backgroundColor: colors.warning }]}>
+              <Text style={styles.suggestionButtonText}>Criar Roteiro</Text>
+            </TouchableOpacity>
+          </View>
         )}
       </View>
     </SafeAreaView>

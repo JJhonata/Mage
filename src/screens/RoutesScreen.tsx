@@ -11,6 +11,8 @@ import {
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
+import { getThemeColors } from '../theme/colors';
+import { StateDisplay } from '../components/StateDisplay';
 
 type Roteiro = {
   id: string;
@@ -77,6 +79,7 @@ export default function RoutesScreen() {
   const [filtroSeguranca, setFiltroSeguranca] = useState<'Todos' | 'Alto' | 'Médio' | 'Baixo'>('Todos');
   const { favoritos } = useFavorites();
   const { theme } = useTheme();
+  const colors = getThemeColors(theme);
 
   // Filtra roteiros baseado no nível de segurança
   const roteirosFiltrados = roteiros.filter(roteiro => 
@@ -87,13 +90,13 @@ export default function RoutesScreen() {
   const getSecurityColor = (nivel: string) => {
     switch (nivel) {
       case 'Alto':
-        return '#10B981';
+        return colors.success;
       case 'Médio':
-        return '#F59E0B';
+        return colors.warning;
       case 'Baixo':
-        return '#EF4444';
+        return colors.danger;
       default:
-        return '#6B7280';
+        return colors.textSecondary;
     }
   };
 
@@ -138,8 +141,11 @@ export default function RoutesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+      <StatusBar 
+        barStyle={theme === 'light' ? 'dark-content' : 'light-content'} 
+        backgroundColor={colors.background} 
+      />
       
       {/* Header */}
       <View style={styles.header}>
@@ -147,11 +153,11 @@ export default function RoutesScreen() {
           <MaterialCommunityIcons 
             name="map-marker-path" 
             size={28} 
-            color="#1E40AF" 
+            color={colors.primary} 
           />
-          <Text style={styles.headerTitle}>Roteiros</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Roteiros</Text>
         </View>
-        <Text style={styles.headerSubtitle}>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           Descubra roteiros seguros e personalizados
         </Text>
       </View>
@@ -159,7 +165,7 @@ export default function RoutesScreen() {
       {/* Botão criar roteiro personalizado */}
       {favoritos.length > 0 && (
         <TouchableOpacity
-          style={styles.createRouteButton}
+          style={[styles.createRouteButton, { backgroundColor: colors.primary }]}
           onPress={criarRoteiroPersonalizado}
         >
           <MaterialCommunityIcons 
@@ -175,7 +181,7 @@ export default function RoutesScreen() {
 
       {/* Filtros de segurança */}
       <View style={styles.filterContainer}>
-        <Text style={styles.filterTitle}>Filtrar por segurança:</Text>
+        <Text style={[styles.filterTitle, { color: colors.text }]}>Filtrar por segurança:</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -187,7 +193,8 @@ export default function RoutesScreen() {
               onPress={() => setFiltroSeguranca(nivel as any)}
               style={[
                 styles.filterButton,
-                filtroSeguranca === nivel && styles.filterButtonActive
+                { backgroundColor: colors.borderLight, borderColor: colors.border },
+                filtroSeguranca === nivel && { backgroundColor: colors.primary, borderColor: colors.primary }
               ]}
             >
               <MaterialCommunityIcons
@@ -198,6 +205,7 @@ export default function RoutesScreen() {
               />
               <Text style={[
                 styles.filterText,
+                { color: colors.text },
                 filtroSeguranca === nivel && styles.filterTextActive
               ]}>
                 {nivel}
@@ -210,8 +218,8 @@ export default function RoutesScreen() {
       {/* Lista de roteiros */}
       <View style={styles.contentContainer}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Roteiros Disponíveis</Text>
-          <Text style={styles.resultsCount}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Roteiros Disponíveis</Text>
+          <Text style={[styles.resultsCount, { color: colors.textSecondary }]}>
             {roteirosFiltrados.length} {roteirosFiltrados.length === 1 ? 'roteiro' : 'roteiros'} encontrado{roteirosFiltrados.length === 1 ? '' : 's'}
           </Text>
         </View>
@@ -221,25 +229,19 @@ export default function RoutesScreen() {
           contentContainerStyle={styles.scrollContent}
         >
           {roteirosFiltrados.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <MaterialCommunityIcons
-                name="map-marker-off"
-                size={64}
-                color="#9CA3AF"
-              />
-              <Text style={styles.emptyTitle}>Nenhum roteiro encontrado</Text>
-              <Text style={styles.emptySubtitle}>
-                Tente ajustar os filtros ou criar um roteiro personalizado
-              </Text>
-            </View>
+            <StateDisplay
+              type="empty"
+              title="Nenhum roteiro encontrado"
+              message="Tente ajustar os filtros ou criar um roteiro personalizado"
+            />
           ) : (
             roteirosFiltrados.map((roteiro) => (
               <TouchableOpacity
                 key={roteiro.id}
-                style={styles.routeCard}
+                style={[styles.routeCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 activeOpacity={0.9}
               >
-                <View style={styles.routeImageContainer}>
+                <View style={[styles.routeImageContainer, { backgroundColor: colors.primary }]}>
                   <MaterialCommunityIcons
                     name="map-marker-path"
                     size={24}
@@ -252,22 +254,22 @@ export default function RoutesScreen() {
                   {/* Header do roteiro */}
                   <View style={styles.routeHeader}>
                     <View style={styles.routeTitleContainer}>
-                      <Text style={styles.routeTitle} numberOfLines={1}>
+                      <Text style={[styles.routeTitle, { color: colors.text }]} numberOfLines={1}>
                         {roteiro.nome}
                       </Text>
-                      <Text style={styles.routeDescription} numberOfLines={2}>
+                      <Text style={[styles.routeDescription, { color: colors.textSecondary }]} numberOfLines={2}>
                         {roteiro.descricao}
                       </Text>
                     </View>
                     
                     <TouchableOpacity
                       onPress={() => toggleFavorito(roteiro.id)}
-                      style={styles.favoriteButton}
+                      style={[styles.favoriteButton, { backgroundColor: colors.borderLight }]}
                     >
                       <Ionicons
                         name={roteiro.favorito ? 'heart' : 'heart-outline'}
                         size={20}
-                        color={roteiro.favorito ? '#EF4444' : '#6B7280'}
+                        color={roteiro.favorito ? colors.danger : colors.textSecondary}
                       />
                     </TouchableOpacity>
                   </View>
@@ -275,24 +277,24 @@ export default function RoutesScreen() {
                   {/* Informações do roteiro */}
                   <View style={styles.routeInfo}>
                     <View style={styles.routeInfoItem}>
-                      <MaterialCommunityIcons name="map-marker" size={14} color="#1E40AF" />
-                      <Text style={styles.routeInfoText}>{roteiro.lugares} lugares</Text>
+                      <MaterialCommunityIcons name="map-marker" size={14} color={colors.primary} />
+                      <Text style={[styles.routeInfoText, { color: colors.textSecondary }]}>{roteiro.lugares} lugares</Text>
                     </View>
                     
                     <View style={styles.routeInfoItem}>
-                      <MaterialCommunityIcons name="clock" size={14} color="#10B981" />
-                      <Text style={styles.routeInfoText}>{roteiro.duracao}</Text>
+                      <MaterialCommunityIcons name="clock" size={14} color={colors.success} />
+                      <Text style={[styles.routeInfoText, { color: colors.textSecondary }]}>{roteiro.duracao}</Text>
                     </View>
                     
                     <View style={styles.routeInfoItem}>
-                      <MaterialCommunityIcons name="road" size={14} color="#F59E0B" />
-                      <Text style={styles.routeInfoText}>{roteiro.distancia}</Text>
+                      <MaterialCommunityIcons name="road" size={14} color={colors.warning} />
+                      <Text style={[styles.routeInfoText, { color: colors.textSecondary }]}>{roteiro.distancia}</Text>
                     </View>
                   </View>
 
                   {/* Indicador de segurança */}
                   <View style={styles.securityContainer}>
-                    <View style={styles.securityIndicator}>
+                    <View style={[styles.securityIndicator, { backgroundColor: colors.borderLight, borderColor: colors.border }]}>
                       <MaterialCommunityIcons
                         name={getSecurityIcon(roteiro.nivelSeguranca) as any}
                         size={16}
@@ -303,7 +305,7 @@ export default function RoutesScreen() {
                       </Text>
                     </View>
                     
-                    <TouchableOpacity style={styles.startRouteButton}>
+                    <TouchableOpacity style={[styles.startRouteButton, { backgroundColor: colors.success }]}>
                       <Text style={styles.startRouteText}>Iniciar Roteiro</Text>
                     </TouchableOpacity>
                   </View>
@@ -320,7 +322,6 @@ export default function RoutesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
     paddingHorizontal: 16,
   },
 
@@ -339,13 +340,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginLeft: 8,
   },
 
   headerSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     marginLeft: 36,
   },
 
@@ -353,7 +352,6 @@ const styles = StyleSheet.create({
   createRouteButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1E40AF',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
@@ -376,7 +374,6 @@ const styles = StyleSheet.create({
   filterTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
     marginBottom: 12,
   },
 
@@ -387,13 +384,11 @@ const styles = StyleSheet.create({
   filterButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F3F4F6',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     marginRight: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
 
   filterButtonActive: {
@@ -408,7 +403,6 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
   },
 
   filterTextActive: {
@@ -430,12 +424,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1F2937',
   },
 
   resultsCount: {
     fontSize: 14,
-    color: '#6B7280',
   },
 
   scrollContent: {
@@ -453,26 +445,22 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#374151',
     marginTop: 16,
     marginBottom: 8,
   },
 
   emptySubtitle: {
     fontSize: 14,
-    color: '#6B7280',
     textAlign: 'center',
     lineHeight: 20,
   },
 
   // Card de roteiro
   routeCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     marginBottom: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -484,7 +472,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#1E40AF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -516,20 +503,17 @@ const styles = StyleSheet.create({
   routeTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 4,
   },
 
   routeDescription: {
     fontSize: 14,
-    color: '#6B7280',
     lineHeight: 20,
   },
 
   favoriteButton: {
     padding: 8,
     borderRadius: 20,
-    backgroundColor: '#F3F4F6',
   },
 
   routeInfo: {
@@ -546,7 +530,6 @@ const styles = StyleSheet.create({
 
   routeInfoText: {
     fontSize: 13,
-    color: '#6B7280',
     marginLeft: 4,
   },
 
@@ -559,12 +542,10 @@ const styles = StyleSheet.create({
   securityIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
 
   securityText: {
@@ -574,7 +555,6 @@ const styles = StyleSheet.create({
   },
 
   startRouteButton: {
-    backgroundColor: '#10B981',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,

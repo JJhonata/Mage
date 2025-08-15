@@ -142,14 +142,14 @@ export default function DetailsScreen({ route }: any) {
       </View>
 
       <ScrollView 
-        style={styles.content}
+        style={[styles.content, { backgroundColor: colors.background }]}
         showsVerticalScrollIndicator={false}
       >
         {/* Informações principais */}
         <View style={styles.mainInfo}>
           <View style={styles.titleRow}>
             <Text style={[styles.title, { color: colors.text }]}>{nome}</Text>
-            <View style={styles.securityBadge}>
+            <View style={[styles.securityBadge, { backgroundColor: colors.borderLight, borderColor: colors.border }]}>
               <MaterialCommunityIcons
                 name={iconeSeguranca as any}
                 size={20}
@@ -180,35 +180,35 @@ export default function DetailsScreen({ route }: any) {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>Informações do Local</Text>
           
           <View style={styles.detailsGrid}>
-            <View style={styles.detailItem}>
+            <View style={[styles.detailItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <MaterialCommunityIcons name="clock-outline" size={20} color={colors.primary} />
               <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, { color: colors.text }]}>Horário</Text>
-                <Text style={[styles.detailValue, { color: colors.textSecondary }]}>08:00 - 18:00</Text>
+                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Horário</Text>
+                <Text style={[styles.detailValue, { color: colors.text }]}>08:00 - 18:00</Text>
               </View>
             </View>
 
-            <View style={styles.detailItem}>
+            <View style={[styles.detailItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <MaterialCommunityIcons name="currency-usd-off" size={20} color={colors.success} />
               <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, { color: colors.text }]}>Entrada</Text>
-                <Text style={[styles.detailValue, { color: colors.textSecondary }]}>Gratuita</Text>
+                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Entrada</Text>
+                <Text style={[styles.detailValue, { color: colors.text }]}>Gratuita</Text>
               </View>
             </View>
 
-            <View style={styles.detailItem}>
+            <View style={[styles.detailItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <MaterialCommunityIcons name="car" size={20} color={colors.warning} />
               <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, { color: colors.text }]}>Estacionamento</Text>
-                <Text style={[styles.detailValue, { color: colors.textSecondary }]}>Disponível</Text>
+                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Estacionamento</Text>
+                <Text style={[styles.detailValue, { color: colors.text }]}>Disponível</Text>
               </View>
             </View>
 
-            <View style={styles.detailItem}>
+            <View style={[styles.detailItem, { backgroundColor: colors.surface, borderColor: colors.border }]}>
               <MaterialCommunityIcons name="wifi" size={20} color={colors.primary} />
               <View style={styles.detailContent}>
-                <Text style={[styles.detailLabel, { color: colors.text }]}>Wi-Fi</Text>
-                <Text style={[styles.detailValue, { color: colors.textSecondary }]}>Gratuito</Text>
+                <Text style={[styles.detailLabel, { color: colors.textSecondary }]}>Wi-Fi</Text>
+                <Text style={[styles.detailValue, { color: colors.text }]}>Gratuito</Text>
               </View>
             </View>
           </View>
@@ -231,12 +231,12 @@ export default function DetailsScreen({ route }: any) {
             {eventosProximos.map((evento) => (
               <TouchableOpacity
                 key={evento.id}
-                style={[styles.eventCard, { backgroundColor: colors.card }]}
+                style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
                 onPress={() => navigation.navigate('Events', { evento })}
               >
                 <View style={styles.eventHeader}>
                   <Text style={[styles.eventDate, { color: colors.textSecondary }]}>{evento.data}</Text>
-                  <Text style={[styles.eventTime, { color: colors.textSecondary }]}>{evento.horario}</Text>
+                  <Text style={[styles.eventTime, { color: colors.primary }]}>{evento.horario}</Text>
                 </View>
                 <Text style={[styles.eventTitle, { color: colors.text }]} numberOfLines={2}>
                   {evento.nome}
@@ -247,8 +247,8 @@ export default function DetailsScreen({ route }: any) {
                     {evento.local}
                   </Text>
                 </View>
-                <View style={styles.eventType}>
-                  <Text style={[styles.eventTypeText, { color: colors.textSecondary }]}>{evento.tipo}</Text>
+                <View style={[styles.eventType, { backgroundColor: colors.borderLight }]}>
+                  <Text style={[styles.eventTypeText, { color: colors.primary }]}>{evento.tipo}</Text>
                 </View>
               </TouchableOpacity>
             ))}

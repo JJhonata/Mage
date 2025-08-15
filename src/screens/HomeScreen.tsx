@@ -15,6 +15,7 @@ import CardLugar from '../components/CardLugar';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors } from '../theme/colors';
 import { LibrasButton } from '../components/LibrasButton';
+import { StateDisplay } from '../components/StateDisplay';
 
 type NivelSeguranca = 'Alto' | 'Médio' | 'Baixo';
 
@@ -227,17 +228,11 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
         >
           {lugaresFiltrados.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <MaterialCommunityIcons
-                name="map-marker-off"
-                size={64}
-                color={colors.textTertiary}
-              />
-              <Text style={[styles.emptyTitle, { color: colors.text }]}>Nenhum lugar encontrado</Text>
-              <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-                Tente ajustar os filtros ou a busca
-              </Text>
-            </View>
+            <StateDisplay
+              type="empty"
+              title="Nenhum lugar encontrado"
+              message="Tente ajustar os filtros ou a busca"
+            />
           ) : (
             lugaresFiltrados.map((lugar) => (
               <CardLugar 

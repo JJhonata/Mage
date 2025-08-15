@@ -12,7 +12,8 @@ import {
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { lightColors, darkColors } from '../theme/colors';
+import { getThemeColors } from '../theme/colors';
+import { StateDisplay } from '../components/StateDisplay';
 
 type Evento = {
   id: string;
@@ -95,7 +96,7 @@ export default function EventsScreen() {
   const [busca, setBusca] = useState('');
   const [filtroTipo, setFiltroTipo] = useState<string>('Todos');
   const { theme } = useTheme();
-  const colors = theme === 'light' ? lightColors : darkColors;
+  const colors = getThemeColors(theme);
 
   // Filtra eventos baseado na busca e tipo
   const eventosFiltrados = useMemo(() => {
@@ -114,13 +115,13 @@ export default function EventsScreen() {
   const getSecurityColor = (nivel: string) => {
     switch (nivel) {
       case 'Alto':
-        return '#10B981';
+        return colors.success;
       case 'Médio':
-        return '#F59E0B';
+        return colors.warning;
       case 'Baixo':
-        return '#EF4444';
+        return colors.danger;
       default:
-        return '#6B7280';
+        return colors.textSecondary;
     }
   };
 
@@ -143,7 +144,10 @@ export default function EventsScreen() {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <StatusBar 
+        barStyle={theme === 'light' ? 'dark-content' : 'light-content'} 
+        backgroundColor={colors.background} 
+      />
       
       {/* Header */}
       <View style={styles.header}>
@@ -151,28 +155,28 @@ export default function EventsScreen() {
           <MaterialCommunityIcons 
             name="calendar-star" 
             size={28} 
-            color="#1E40AF" 
+            color={colors.primary} 
           />
           <Text style={[styles.headerTitle, { color: colors.text }]}>
             Eventos Locais
           </Text>
         </View>
-        <Text style={[styles.headerSubtitle, { color: colors.text }]}>
+        <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
           Descubra eventos seguros próximos
         </Text>
       </View>
 
       {/* Campo de busca */}
-      <View style={[styles.searchContainer, { backgroundColor: colors.card }]}>
+      <View style={[styles.searchContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <Ionicons 
           name="search" 
           size={20} 
-          color="#6B7280" 
+          color={colors.textSecondary} 
           style={styles.searchIcon} 
         />
         <TextInput
           placeholder="Buscar eventos..."
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={colors.textTertiary}
           value={busca}
           onChangeText={setBusca}
           style={[styles.searchInput, { color: colors.text }]}
@@ -182,7 +186,7 @@ export default function EventsScreen() {
             onPress={() => setBusca('')}
             style={styles.clearButton}
           >
-            <Ionicons name="close-circle" size={20} color="#6B7280" />
+            <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -203,8 +207,8 @@ export default function EventsScreen() {
               onPress={() => setFiltroTipo(tipo)}
               style={[
                 styles.filterButton,
-                { backgroundColor: colors.card },
-                filtroTipo === tipo && styles.filterButtonActive
+                { backgroundColor: colors.card, borderColor: colors.border },
+                filtroTipo === tipo && { backgroundColor: colors.primary, borderColor: colors.primary }
               ]}
             >
               <Text style={[
@@ -225,7 +229,7 @@ export default function EventsScreen() {
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
             Eventos Encontrados
           </Text>
-          <Text style={[styles.resultsCount, { color: colors.text }]}>
+          <Text style={[styles.resultsCount, { color: colors.textSecondary }]}>
             {eventosFiltrados.length} {eventosFiltrados.length === 1 ? 'evento' : 'eventos'}
           </Text>
         </View>
@@ -235,24 +239,16 @@ export default function EventsScreen() {
           contentContainerStyle={styles.scrollContent}
         >
           {eventosFiltrados.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <MaterialCommunityIcons
-                name="calendar-remove"
-                size={64}
-                color="#9CA3AF"
-              />
-              <Text style={[styles.emptyTitle, { color: colors.text }]}>
-                Nenhum evento encontrado
-              </Text>
-              <Text style={[styles.emptySubtitle, { color: colors.text }]}>
-                Tente ajustar os filtros ou a busca
-              </Text>
-            </View>
+            <StateDisplay
+              type="empty"
+              title="Nenhum evento encontrado"
+              message="Tente ajustar os filtros ou a busca"
+            />
           ) : (
             eventosFiltrados.map((evento) => (
               <View 
                 key={evento.id} 
-                style={[styles.eventCard, { backgroundColor: colors.card }]}
+                style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
               >
                 <Image 
                   source={{ uri: evento.imagem }} 
@@ -268,14 +264,14 @@ export default function EventsScreen() {
                         {evento.nome}
                       </Text>
                       <View style={styles.eventMeta}>
-                        <MaterialCommunityIcons name="map-marker" size={14} color="#6B7280" />
-                        <Text style={[styles.eventLocation, { color: colors.text }]} numberOfLines={1}>
+                        <MaterialCommunityIcons name="map-marker" size={14} color={colors.textSecondary} />
+                        <Text style={[styles.eventLocation, { color: colors.textSecondary }]} numberOfLines={1}>
                           {evento.local}
                         </Text>
                       </View>
                     </View>
                     
-                    <View style={styles.securityIndicator}>
+                    <View style={[styles.securityIndicator, { backgroundColor: colors.borderLight, borderColor: colors.border }]}>
                       <MaterialCommunityIcons
                         name={getSecurityIcon(evento.nivelSeguranca) as any}
                         size={16}
@@ -288,28 +284,28 @@ export default function EventsScreen() {
                   </View>
 
                   {/* Descrição */}
-                  <Text style={[styles.eventDescription, { color: colors.text }]} numberOfLines={2}>
+                  <Text style={[styles.eventDescription, { color: colors.textSecondary }]} numberOfLines={2}>
                     {evento.descricao}
                   </Text>
 
                   {/* Informações do evento */}
                   <View style={styles.eventInfo}>
                     <View style={styles.eventInfoItem}>
-                      <MaterialCommunityIcons name="calendar" size={16} color="#1E40AF" />
+                      <MaterialCommunityIcons name="calendar" size={16} color={colors.primary} />
                       <Text style={[styles.eventInfoText, { color: colors.text }]}>
                         {evento.data}
                       </Text>
                     </View>
                     
                     <View style={styles.eventInfoItem}>
-                      <MaterialCommunityIcons name="clock" size={16} color="#10B981" />
+                      <MaterialCommunityIcons name="clock" size={16} color={colors.success} />
                       <Text style={[styles.eventInfoText, { color: colors.text }]}>
                         {evento.horario}
                       </Text>
                     </View>
                     
                     <View style={styles.eventInfoItem}>
-                      <MaterialCommunityIcons name="currency-usd" size={16} color="#F59E0B" />
+                      <MaterialCommunityIcons name="currency-usd" size={16} color={colors.warning} />
                       <Text style={[styles.eventInfoText, { color: colors.text }]}>
                         {evento.preco}
                       </Text>
@@ -317,8 +313,8 @@ export default function EventsScreen() {
                   </View>
 
                   {/* Tipo do evento */}
-                  <View style={styles.eventTypeContainer}>
-                    <Text style={styles.eventTypeText}>{evento.tipo}</Text>
+                  <View style={[styles.eventTypeContainer, { backgroundColor: colors.borderLight }]}>
+                    <Text style={[styles.eventTypeText, { color: colors.primary }]}>{evento.tipo}</Text>
                   </View>
                 </View>
               </View>
