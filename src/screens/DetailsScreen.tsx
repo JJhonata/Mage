@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -51,6 +50,8 @@ export default function DetailsScreen({ route }: any) {
   const { theme } = useTheme();
   const colors = getThemeColors(theme);
   
+
+  
   const estaFavoritado = favoritos.some(item => item.nome === nome);
   
   const scale = useSharedValue(1);
@@ -93,6 +94,8 @@ export default function DetailsScreen({ route }: any) {
         return 'shield';
     }
   };
+
+
 
   const corSeguranca = getSecurityColor(nivelSeguranca);
   const iconeSeguranca = getSecurityIcon(nivelSeguranca);
@@ -218,7 +221,7 @@ export default function DetailsScreen({ route }: any) {
         <View style={styles.eventsSection}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Eventos Próximos</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Events')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Eventos')}>
               <Text style={[styles.seeAllText, { color: colors.primary }]}>Ver todos</Text>
             </TouchableOpacity>
           </View>
@@ -232,7 +235,7 @@ export default function DetailsScreen({ route }: any) {
               <TouchableOpacity
                 key={evento.id}
                 style={[styles.eventCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-                onPress={() => navigation.navigate('Events', { evento })}
+                onPress={() => navigation.navigate('Eventos', { evento })}
               >
                 <View style={styles.eventHeader}>
                   <Text style={[styles.eventDate, { color: colors.textSecondary }]}>{evento.data}</Text>
@@ -254,6 +257,8 @@ export default function DetailsScreen({ route }: any) {
             ))}
           </ScrollView>
         </View>
+
+
       </ScrollView>
     </SafeAreaView>
   );

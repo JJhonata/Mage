@@ -1,4 +1,3 @@
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
@@ -19,18 +18,18 @@ export default function TabNavigation() {
 
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName="Início"
       screenOptions={({ route }) => ({
         headerShown: true,
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
-          if (route.name === 'Home') {
+          if (route.name === 'Início') {
             iconName = 'home';
-          } else if (route.name === 'Favorites') {
+          } else if (route.name === 'Favoritos') {
             iconName = 'star';
-          } else if (route.name === 'Events') {
+          } else if (route.name === 'Eventos') {
             iconName = 'calendar';
-          } else if (route.name === 'Routes') {
+          } else if (route.name === 'Roteiros') {
             iconName = 'map';
           }
 
@@ -56,10 +55,10 @@ export default function TabNavigation() {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Favorites" component={FavoritesScreen} />
-      <Tab.Screen name="Events" component={EventsScreen} />
-      <Tab.Screen name="Routes" component={RoutesScreen} />
+      <Tab.Screen name="Início" component={HomeScreen} />
+      <Tab.Screen name="Favoritos" component={FavoritesScreen} />
+      <Tab.Screen name="Eventos" component={EventsScreen} />
+      <Tab.Screen name="Roteiros" component={RoutesScreen} />
     </Tab.Navigator>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   SafeAreaView, 
   Text, 
@@ -84,7 +84,7 @@ export default function FavoritesScreen() {
           title="Nenhum favorito ainda"
           message="Adicione lugares aos seus favoritos para criar roteiros personalizados"
           actionText="Explorar Lugares"
-          onAction={() => {/* Navegar para Home */}}
+          onAction={() => {/* Navegar para Início */}}
           showAction={true}
         />
       </SafeAreaView>

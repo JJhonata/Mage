@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -213,6 +213,8 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
       </View>
+
+
 
       {/* Seção de pontos turísticos */}
       <View style={styles.contentContainer}>
