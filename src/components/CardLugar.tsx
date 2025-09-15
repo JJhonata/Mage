@@ -5,6 +5,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { getThemeColors } from '../theme/colors';
+import { getImageSource } from '../utils/imageUtils';
 
 interface Props {
   id: string;
@@ -85,7 +86,7 @@ export default function CardLugar({
       <Animated.View style={[styles.cardContent, animatedCardStyle]}>
         {/* Imagem do local */}
         <Image
-          source={{ uri: imagem }}
+          source={getImageSource(imagem)}
           style={styles.imagem}
           resizeMode="cover"
         />

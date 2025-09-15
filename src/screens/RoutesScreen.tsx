@@ -5,9 +5,10 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StyleSheet, 
-  SafeAreaView,
   StatusBar,
+  Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
@@ -121,6 +122,26 @@ export default function RoutesScreen() {
           ? { ...roteiro, favorito: !roteiro.favorito }
           : roteiro
       )
+    );
+  };
+
+  const excluirRoteiro = (id: string, nome: string) => {
+    Alert.alert(
+      'Excluir Roteiro',
+      `Tem certeza que deseja excluir o roteiro "${nome}"?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: () => {
+            setRoteiros(prev => prev.filter(roteiro => roteiro.id !== id));
+          },
+        },
+      ]
     );
   };
 
@@ -262,16 +283,29 @@ export default function RoutesScreen() {
                       </Text>
                     </View>
                     
-                    <TouchableOpacity
-                      onPress={() => toggleFavorito(roteiro.id)}
-                      style={[styles.favoriteButton, { backgroundColor: colors.borderLight }]}
-                    >
-                      <Ionicons
-                        name={roteiro.favorito ? 'heart' : 'heart-outline'}
-                        size={20}
-                        color={roteiro.favorito ? colors.danger : colors.textSecondary}
-                      />
-                    </TouchableOpacity>
+                    <View style={styles.routeActions}>
+                      <TouchableOpacity
+                        onPress={() => toggleFavorito(roteiro.id)}
+                        style={[styles.favoriteButton, { backgroundColor: colors.borderLight }]}
+                      >
+                        <Ionicons
+                          name={roteiro.favorito ? 'heart' : 'heart-outline'}
+                          size={20}
+                          color={roteiro.favorito ? colors.danger : colors.textSecondary}
+                        />
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity
+                        onPress={() => excluirRoteiro(roteiro.id, roteiro.nome)}
+                        style={[styles.deleteButton, { backgroundColor: colors.borderLight }]}
+                      >
+                        <Ionicons
+                          name="trash-outline"
+                          size={20}
+                          color={colors.danger}
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
 
                   {/* Informações do roteiro */}
@@ -511,7 +545,18 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
+  routeActions: {
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
   favoriteButton: {
+    padding: 8,
+    borderRadius: 20,
+    marginBottom: 8,
+  },
+
+  deleteButton: {
     padding: 8,
     borderRadius: 20,
   },

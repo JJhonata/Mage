@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { 
-  SafeAreaView, 
   Text, 
   ScrollView, 
   View, 
@@ -8,6 +7,7 @@ import {
   StyleSheet,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
@@ -67,7 +67,7 @@ export default function FavoritesScreen() {
         />
         
         {/* Header */}
-        <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <View style={styles.header}>
           <View style={styles.headerContent}>
             <MaterialCommunityIcons 
               name="heart" 
@@ -163,23 +163,15 @@ export default function FavoritesScreen() {
             contentContainerStyle={styles.scrollContent}
           >
             {favoritos.map((lugar, index) => (
-              <View key={`${lugar.nome}-${index}`} style={styles.favoriteItem}>
-                <CardLugar 
-                  {...lugar}
-                  id={index.toString()}
-                  distancia="Favorito"
-                  tipo="Favorito"
-                  securityColor={getSecurityColor(lugar.nivelSeguranca)}
-                  securityIcon={getSecurityIcon(lugar.nivelSeguranca)}
-                />
-                
-                <TouchableOpacity
-                  style={[styles.removeButton, { backgroundColor: colors.surface }]}
-                  onPress={() => removerFavorito(lugar)}
-                >
-                  <Ionicons name="trash-outline" size={20} color={colors.danger} />
-                </TouchableOpacity>
-              </View>
+              <CardLugar 
+                key={`${lugar.nome}-${index}`}
+                {...lugar}
+                id={index.toString()}
+                distancia="Favorito"
+                tipo="Favorito"
+                securityColor={getSecurityColor(lugar.nivelSeguranca)}
+                securityIcon={getSecurityIcon(lugar.nivelSeguranca)}
+              />
             ))}
           </ScrollView>
         </View>
@@ -223,9 +215,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
 
   headerContent: {
@@ -377,24 +366,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 
-  favoriteItem: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-
-  removeButton: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
 
   // Sugestão de roteiro
   routeSuggestion: {

@@ -9,6 +9,7 @@ import HomeScreen from '../screens/HomeScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import EventsScreen from '../screens/EventsScreen';
 import RoutesScreen from '../screens/RoutesScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -31,6 +32,8 @@ export default function TabNavigation() {
             iconName = 'calendar';
           } else if (route.name === 'Roteiros') {
             iconName = 'map';
+          } else if (route.name === 'Perfil') {
+            iconName = 'person';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -59,6 +62,7 @@ export default function TabNavigation() {
       <Tab.Screen name="Favoritos" component={FavoritesScreen} />
       <Tab.Screen name="Eventos" component={EventsScreen} />
       <Tab.Screen name="Roteiros" component={RoutesScreen} />
+      <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }

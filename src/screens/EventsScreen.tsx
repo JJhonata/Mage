@@ -6,10 +6,10 @@ import {
   TextInput, 
   Image, 
   StyleSheet, 
-  SafeAreaView,
   TouchableOpacity,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getThemeColors } from '../theme/colors';

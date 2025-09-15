@@ -5,14 +5,15 @@ import {
   StyleSheet, 
   ScrollView, 
   TouchableOpacity, 
-  SafeAreaView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useFavorites } from '../context/FavoritesContext';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors } from '../theme/colors';
+import { getImageSource } from '../utils/imageUtils';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 // Dados mockados de eventos próximos
@@ -110,7 +111,7 @@ export default function DetailsScreen({ route }: any) {
       {/* Header com imagem e overlay */}
       <View style={styles.headerContainer}>
         <Image 
-          source={{ uri: imagem }} 
+          source={getImageSource(imagem)} 
           style={styles.headerImage}
           resizeMode="cover"
         />
@@ -267,7 +268,6 @@ export default function DetailsScreen({ route }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
   },
   
   // Header com imagem e overlay
@@ -336,7 +336,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
     flex: 1,
     marginRight: 12,
   },
@@ -344,12 +343,10 @@ const styles = StyleSheet.create({
   securityBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
   },
   
   securityText: {
@@ -371,14 +368,12 @@ const styles = StyleSheet.create({
   
   metaText: {
     fontSize: 14,
-    color: '#6B7280',
     marginLeft: 4,
   },
   
   description: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
     marginBottom: 24,
   },
   
@@ -391,7 +386,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1F2937',
     marginBottom: 16,
   },
   
@@ -404,13 +398,11 @@ const styles = StyleSheet.create({
   detailItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
     width: '48%',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -425,14 +417,12 @@ const styles = StyleSheet.create({
   
   detailLabel: {
     fontSize: 12,
-    color: '#6B7280',
     marginBottom: 2,
   },
   
   detailValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
   },
   
   // Seção de eventos
@@ -450,7 +440,6 @@ const styles = StyleSheet.create({
   
   seeAllText: {
     fontSize: 14,
-    color: '#1E40AF',
     fontWeight: '600',
   },
   
@@ -459,13 +448,11 @@ const styles = StyleSheet.create({
   },
   
   eventCard: {
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 16,
     marginRight: 12,
     width: 200,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -481,19 +468,16 @@ const styles = StyleSheet.create({
   
   eventDate: {
     fontSize: 12,
-    color: '#6B7280',
   },
   
   eventTime: {
     fontSize: 12,
-    color: '#1E40AF',
     fontWeight: '600',
   },
   
   eventTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1F2937',
     marginBottom: 8,
     lineHeight: 18,
   },
@@ -506,7 +490,6 @@ const styles = StyleSheet.create({
   
   eventLocation: {
     fontSize: 12,
-    color: '#6B7280',
     marginLeft: 4,
     flex: 1,
   },
@@ -517,8 +500,6 @@ const styles = StyleSheet.create({
   
   eventTypeText: {
     fontSize: 10,
-    color: '#1E40AF',
-    backgroundColor: '#EFF6FF',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,

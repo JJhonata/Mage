@@ -3,18 +3,17 @@ import {
   View,
   Text,
   ScrollView,
-  SafeAreaView,
   TextInput,
   TouchableOpacity,
   Dimensions,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from '../styles/homeStyles';
 import CardLugar from '../components/CardLugar';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors } from '../theme/colors';
-import { LibrasButton } from '../components/LibrasButton';
 import { StateDisplay } from '../components/StateDisplay';
 
 type NivelSeguranca = 'Alto' | 'Médio' | 'Baixo';
@@ -35,7 +34,7 @@ const lugaresProximos: Lugar[] = [
     id: '1',
     nome: 'Praia do Futuro',
     descricao: 'Uma das praias mais famosas de Fortaleza, com excelente infraestrutura turística.',
-    imagem: 'https://source.unsplash.com/random/400x250?beach',
+    imagem: 'praia_futuro',
     nivelSeguranca: 'Alto',
     distancia: '2.5 km',
     tipo: 'Praia',
@@ -44,7 +43,7 @@ const lugaresProximos: Lugar[] = [
     id: '2',
     nome: 'Centro Dragão do Mar',
     descricao: 'Complexo cultural com museus, teatro e espaços de lazer.',
-    imagem: 'https://source.unsplash.com/random/400x250?museum',
+    imagem: 'centro_dragao',
     nivelSeguranca: 'Alto',
     distancia: '1.8 km',
     tipo: 'Cultural',
@@ -53,7 +52,7 @@ const lugaresProximos: Lugar[] = [
     id: '3',
     nome: 'Mercado Central',
     descricao: 'Tradicional mercado com artesanato local e gastronomia regional.',
-    imagem: 'https://source.unsplash.com/random/400x250?market',
+    imagem: 'mercado_central',
     nivelSeguranca: 'Médio',
     distancia: '3.2 km',
     tipo: 'Comércio',
@@ -62,7 +61,7 @@ const lugaresProximos: Lugar[] = [
     id: '4',
     nome: 'Parque do Cocó',
     descricao: 'Maior parque urbano da América Latina, ideal para caminhadas.',
-    imagem: 'https://source.unsplash.com/random/400x250?park',
+    imagem: 'parque_coco',
     nivelSeguranca: 'Alto',
     distancia: '4.1 km',
     tipo: 'Natureza',
@@ -71,7 +70,7 @@ const lugaresProximos: Lugar[] = [
     id: '5',
     nome: 'Beira-Mar',
     descricao: 'Avenida à beira-mar com ciclovia e área de lazer.',
-    imagem: 'https://source.unsplash.com/random/400x250?seaside',
+    imagem: 'beira_mar',
     nivelSeguranca: 'Alto',
     distancia: '1.2 km',
     tipo: 'Lazer',
@@ -150,7 +149,6 @@ export default function HomeScreen() {
             Descubra lugares seguros para visitar
           </Text>
         </View>
-        <LibrasButton />
       </View>
 
       {/* Campo de busca */}

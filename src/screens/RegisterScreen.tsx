@@ -8,26 +8,30 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { getThemeColors } from '../theme/colors';
 import { useNavigation } from '@react-navigation/native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../services/firebaseService';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../services/firebaseService';
 
-interface LoginScreenProps {
+interface RegisterScreenProps {
   navigation: any;
 }
 
-export default function LoginScreen({ navigation }: LoginScreenProps) {
+export default function RegisterScreen({ navigation }: RegisterScreenProps) {
   // Estados para campos controlados
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [tentativasLogin, setTentativasLogin] = useState(0);
 
   const { theme } = useTheme();
   const colors = getThemeColors(theme);
@@ -44,10 +48,21 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     return senha.length >= 6;
   };
 
-  // Função de login
-  const handleLogin = async () => {
-    if (!email.trim() || !senha.trim()) {
+  // Validação de nome
+  const validarNome = (nome: string) => {
+    return nome.trim().length >= 2;
+  };
+
+  // Função de cadastro
+  const handleRegister = async () => {
+    // Validações básicas
+    if (!nome.trim() || !email.trim() || !senha.trim() || !confirmarSenha.trim()) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos');
+      return;
+    }
+
+    if (!validarNome(nome)) {
+      Alert.alert('Erro', 'O nome deve ter pelo menos 2 caracteres');
       return;
     }
 
@@ -61,52 +76,68 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       return;
     }
 
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem');
+      return;
+    }
+
     setIsLoading(true);
-    
+
     try {
-      // Login com Firebase
-      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+      // Criar usuário no Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
       const user = userCredential.user;
-      
-      setTentativasLogin(0);
-      
-      // Navegação para Tabs
-      navigation.navigate('Tabs' as never);
-      
+
+      // Atualizar perfil do usuário
+      await updateProfile(user, {
+        displayName: nome.trim(),
+      });
+
+      // Salvar dados adicionais no Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        nome: nome.trim(),
+        email: email,
+        dataCriacao: new Date(),
+        preferencias: {
+          tema: theme,
+          notificacoes: true,
+        },
+      });
+
+      Alert.alert(
+        'Sucesso!',
+        'Conta criada com sucesso!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Navegação para Tabs
+              nav.navigate('Tabs' as never);
+            },
+          },
+        ]
+      );
+
     } catch (error: any) {
-      const novasTentativas = tentativasLogin + 1;
-      setTentativasLogin(novasTentativas);
       
-      let mensagemErro = 'Erro ao fazer login. Tente novamente.';
+      let mensagemErro = 'Erro ao criar conta. Tente novamente.';
       
       switch (error.code) {
-        case 'auth/user-not-found':
-          mensagemErro = 'Usuário não encontrado.';
-          break;
-        case 'auth/wrong-password':
-          mensagemErro = 'Senha incorreta.';
+        case 'auth/email-already-in-use':
+          mensagemErro = 'Este email já está sendo usado.';
           break;
         case 'auth/invalid-email':
           mensagemErro = 'Email inválido.';
           break;
-        case 'auth/user-disabled':
-          mensagemErro = 'Esta conta foi desabilitada.';
-          break;
-        case 'auth/too-many-requests':
-          mensagemErro = 'Muitas tentativas. Tente novamente mais tarde.';
+        case 'auth/weak-password':
+          mensagemErro = 'A senha é muito fraca.';
           break;
         case 'auth/network-request-failed':
           mensagemErro = 'Erro de conexão. Verifique sua internet.';
           break;
       }
       
-      if (novasTentativas >= 3) {
-        Alert.alert('Bloqueado', 'Muitas tentativas. Tente novamente em 5 minutos.');
-        setEmail('');
-        setSenha('');
-      } else {
-        Alert.alert('Erro', `${mensagemErro} Tentativa ${novasTentativas}/3`);
-      }
+      Alert.alert('Erro', mensagemErro);
     } finally {
       setIsLoading(false);
     }
@@ -114,9 +145,10 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
   // Função para limpar campos
   const limparCampos = () => {
+    setNome('');
     setEmail('');
     setSenha('');
-    setTentativasLogin(0);
+    setConfirmarSenha('');
   };
 
   const styles = {
@@ -126,12 +158,12 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     },
     content: {
       flex: 1,
-      justifyContent: 'center' as const,
       paddingHorizontal: 24,
     },
     header: {
       alignItems: 'center' as const,
-      marginBottom: 48,
+      marginTop: 40,
+      marginBottom: 32,
     },
     logoContainer: {
       flexDirection: 'row' as const,
@@ -150,7 +182,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       textAlign: 'center' as const,
     },
     form: {
-      marginBottom: 24,
+      flex: 1,
     },
     inputContainer: {
       marginBottom: 20,
@@ -179,7 +211,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
     passwordToggle: {
       padding: 8,
     },
-    loginButton: {
+    registerButton: {
       backgroundColor: colors.primary,
       borderRadius: 12,
       height: 50,
@@ -188,7 +220,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       marginBottom: 16,
       opacity: isLoading ? 0.7 : 1,
     },
-    loginButtonText: {
+    registerButtonText: {
       color: '#FFFFFF',
       fontSize: 16,
       fontWeight: '600' as const,
@@ -201,52 +233,62 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
       height: 50,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
+      marginBottom: 24,
     },
     clearButtonText: {
       color: colors.text,
       fontSize: 16,
       fontWeight: '600' as const,
     },
-    demoInfo: {
-      backgroundColor: colors.surface,
-      padding: 16,
-      borderRadius: 12,
-      marginTop: 24,
-    },
-    demoTitle: {
-      fontSize: 14,
-      fontWeight: '600' as const,
-      color: colors.text,
-      marginBottom: 8,
-    },
-    demoText: {
-      fontSize: 12,
-      color: colors.textSecondary,
-      lineHeight: 18,
-    },
-    tentativasInfo: {
-      textAlign: 'center' as const,
-      fontSize: 12,
-      color: tentativasLogin > 0 ? '#EF4444' : colors.textSecondary,
-      marginTop: 8,
-    },
-    registerLink: {
+    loginLink: {
       alignItems: 'center' as const,
       marginTop: 16,
     },
-    registerLinkText: {
+    loginLinkText: {
       fontSize: 16,
       color: colors.textSecondary,
     },
-    registerLinkButton: {
+    loginLinkButton: {
       marginTop: 8,
     },
-    registerLinkButtonText: {
+    loginLinkButtonText: {
       fontSize: 16,
       color: colors.primary,
       fontWeight: '600' as const,
     },
+    passwordStrength: {
+      marginTop: 8,
+    },
+    strengthText: {
+      fontSize: 12,
+      color: colors.textSecondary,
+    },
+    strengthBar: {
+      height: 4,
+      backgroundColor: colors.border,
+      borderRadius: 2,
+      marginTop: 4,
+    },
+    strengthFill: {
+      height: '100%' as any,
+      borderRadius: 2,
+    },
   };
+
+  // Calcular força da senha
+  const calcularForcaSenha = (senha: string) => {
+    let score = 0;
+    if (senha.length >= 6) score += 1;
+    if (senha.length >= 8) score += 1;
+    if (/[A-Z]/.test(senha)) score += 1;
+    if (/[a-z]/.test(senha)) score += 1;
+    if (/[0-9]/.test(senha)) score += 1;
+    if (/[^A-Za-z0-9]/.test(senha)) score += 1;
+    return score;
+  };
+
+  const forcaSenha = calcularForcaSenha(senha);
+  const coresForca = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -259,7 +301,7 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <View style={styles.content}>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Header com logo */}
           <View style={styles.header}>
             <View style={styles.logoContainer}>
@@ -271,12 +313,39 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Text style={styles.logoText}>Mage</Text>
             </View>
             <Text style={styles.subtitle}>
-              Faça login para acessar sua conta
+              Crie sua conta para começar
             </Text>
           </View>
 
           {/* Formulário */}
           <View style={styles.form}>
+            {/* Campo de nome */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Nome completo</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons 
+                  name="person-outline" 
+                  size={20} 
+                  color={colors.textSecondary} 
+                  style={{ marginRight: 12 }}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Digite seu nome completo"
+                  placeholderTextColor={colors.textTertiary}
+                  value={nome}
+                  onChangeText={setNome}
+                  autoCapitalize="words"
+                  autoCorrect={false}
+                />
+                {nome.length > 0 && (
+                  <TouchableOpacity onPress={() => setNome('')}>
+                    <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
             {/* Campo de email */}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>Email</Text>
@@ -335,16 +404,80 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
                   />
                 </TouchableOpacity>
               </View>
+              
+              {/* Indicador de força da senha */}
+              {senha.length > 0 && (
+                <View style={styles.passwordStrength}>
+                  <Text style={styles.strengthText}>
+                    Força da senha: {forcaSenha === 0 ? 'Muito fraca' : 
+                                   forcaSenha <= 2 ? 'Fraca' : 
+                                   forcaSenha <= 4 ? 'Média' : 'Forte'}
+                  </Text>
+                  <View style={styles.strengthBar}>
+                    <View 
+                      style={[
+                        styles.strengthFill, 
+                        { 
+                          width: `${(forcaSenha / 6) * 100}%`,
+                          backgroundColor: coresForca[forcaSenha] || colors.border
+                        }
+                      ]} 
+                    />
+                  </View>
+                </View>
+              )}
+            </View>
+
+            {/* Campo de confirmar senha */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Confirmar senha</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons 
+                  name="lock-closed-outline" 
+                  size={20} 
+                  color={colors.textSecondary} 
+                  style={{ marginRight: 12 }}
+                />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Confirme sua senha"
+                  placeholderTextColor={colors.textTertiary}
+                  value={confirmarSenha}
+                  onChangeText={setConfirmarSenha}
+                  secureTextEntry={!mostrarConfirmarSenha}
+                  autoCapitalize="none"
+                />
+                <TouchableOpacity 
+                  style={styles.passwordToggle}
+                  onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                >
+                  <Ionicons 
+                    name={mostrarConfirmarSenha ? "eye-off" : "eye"} 
+                    size={20} 
+                    color={colors.textSecondary} 
+                  />
+                </TouchableOpacity>
+              </View>
+              
+              {/* Validação de confirmação de senha */}
+              {confirmarSenha.length > 0 && (
+                <Text style={[
+                  styles.strengthText, 
+                  { color: senha === confirmarSenha ? '#10B981' : '#EF4444' }
+                ]}>
+                  {senha === confirmarSenha ? '✓ Senhas coincidem' : '✗ Senhas não coincidem'}
+                </Text>
+              )}
             </View>
 
             {/* Botões */}
             <TouchableOpacity 
-              style={styles.loginButton}
-              onPress={handleLogin}
+              style={styles.registerButton}
+              onPress={handleRegister}
               disabled={isLoading}
             >
-              <Text style={styles.loginButtonText}>
-                {isLoading ? 'Entrando...' : 'Entrar'}
+              <Text style={styles.registerButtonText}>
+                {isLoading ? 'Criando conta...' : 'Criar conta'}
               </Text>
             </TouchableOpacity>
 
@@ -355,24 +488,18 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
               <Text style={styles.clearButtonText}>Limpar Campos</Text>
             </TouchableOpacity>
 
-            {tentativasLogin > 0 && (
-              <Text style={styles.tentativasInfo}>
-                Tentativas de login: {tentativasLogin}/3
-              </Text>
-            )}
+            {/* Link para login */}
+            <View style={styles.loginLink}>
+              <Text style={styles.loginLinkText}>Já tem uma conta?</Text>
+              <TouchableOpacity 
+                style={styles.loginLinkButton}
+                onPress={() => nav.goBack()}
+              >
+                <Text style={styles.loginLinkButtonText}>Fazer login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-
-          {/* Link para cadastro */}
-          <View style={styles.registerLink}>
-            <Text style={styles.registerLinkText}>Não tem uma conta?</Text>
-            <TouchableOpacity 
-              style={styles.registerLinkButton}
-              onPress={() => nav.navigate('Register' as never)}
-            >
-              <Text style={styles.registerLinkButtonText}>Criar conta</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
