@@ -381,21 +381,6 @@ expo build:ios        # Build para iOS
 
 ---
 
-## 🚀 Próximas Funcionalidades
-
-### **Versão 2.0**
-- [ ] **Mapas integrados** com Google Maps
-- [ ] **Navegação GPS** para roteiros
-- [ ] **Notificações push** para eventos
-- [ ] **Sistema de avaliações** de usuários
-- [ ] **Chat de suporte** integrado
-
-### **Versão 2.1**
-- [ ] **Reconhecimento de voz** para busca
-- [ ] **Realidade aumentada** para pontos turísticos
-- [ ] **Integração com redes sociais**
-- [ ] **Sistema de recompensas**
-
 ---
 
 ## 🤝 Contribuição
