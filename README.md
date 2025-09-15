@@ -424,13 +424,8 @@ Este projeto está sob a licença **MIT**. Veja o arquivo [LICENSE](LICENSE) par
 ## 👥 Desenvolvedores
 
 **Desenvolvido com 💚 por:**
-- **Jhonata Vieira** - Desenvolvedor Full Stack
-- **Larissa** - Designer UX/UI
-
-### **Contato**
-- 📧 Email: contato@mageapp.com
-- 🌐 Website: [www.mageapp.com](https://www.mageapp.com)
-- 📱 Instagram: [@mageapp](https://instagram.com/mageapp)
+- **Jhonata Vieira**
+- **Larissa**
 
 ---
 
